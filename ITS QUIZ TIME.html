@@ -1,524 +1,231 @@
-<!DOCTYPE html>
+<html>
 <head>
-@import url(https://fonts.googleapis.com/css?family=Work+Sans:300,600);
-
-body{
-	font-size: 20px;
-	font-family: 'Work Sans', sans-serif;
-	color: #333;
-  font-weight: 300;
-  text-align: center;
-  background-color: #f8f6f0;
-}
-h1{
-  font-weight: 300;
-  margin: 0px;
-  padding: 10px;
-  font-size: 20px;
-  background-color: #444;
-  color: #fff;
-}
-.question{
-  font-size: 30px;
-  margin-bottom: 10px;
-}
-.answers {
-  margin-bottom: 20px;
-  text-align: left;
-  display: inline-block;
-}
-.answers label{
-  display: block;
-  margin-bottom: 10px;
-}
-button{
-  font-family: 'Work Sans', sans-serif;
-	font-size: 22px;
-	background-color: #279;
-	color: #fff;
-	border: 0px;
-	border-radius: 3px;
-	padding: 20px;
-	cursor: pointer;
-	margin-bottom: 20px;
-}
-button:hover{
-	background-color: #38a;
-}
-
-
-
-	
-	
-
-
-
-
-
-.slide{
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.5s;
-}
-.active-slide{
-  opacity: 1;
-  z-index: 2;
-}
-.quiz-container{
-  position: relative;
-  height: 200px;
-  margin-top: 40px;
-}
+<title>Quiz Questions And Answers</title>
 </head>
 <body>
-	<h1>Quiz on Important Facts</h1>
-<div class="quiz-container">
-  <div id="quiz"></div>
-</div>
-<button id="previous">Previous Question</button>
-<button id="next">Next Question</button>
-<button id="submit">Submit Quiz</button>
-<div id="results"></div>
-	<script>(function(){
-  // Functions
-  function buildQuiz(){
-    // variable to store the HTML output
-    const output = [];
-
-    // for each question...
-    myQuestions.forEach(
-      (currentQuestion, questionNumber) => {
-
-        // variable to store the list of possible answers
-        const answers = [];
-
-        // and for each available answer...
-        for(letter in currentQuestion.answers){
-
-          // ...add an HTML radio button
-          answers.push(
-            `<label>
-              <input type="radio" name="question${questionNumber}" value="${letter}">
-              ${letter} :
-              ${currentQuestion.answers[letter]}
-            </label>`
-          );
-        }
-
-        // add this question and its answers to the output
-        output.push(
-          `<div class="slide">
-            <div class="question"> ${currentQuestion.question} </div>
-            <div class="answers"> ${answers.join("")} </div>
-          </div>`
-        );
-      }
-    );
-
-    // finally combine our output list into one string of HTML and put it on the page
-    quizContainer.innerHTML = output.join('');
-  }
-
-  function showResults(){
-
-    // gather answer containers from our quiz
-    const answerContainers = quizContainer.querySelectorAll('.answers');
-
-    // keep track of user's answers
-    let numCorrect = 0;
-
-    // for each question...
-    myQuestions.forEach( (currentQuestion, questionNumber) => {
-
-      // find selected answer
-      const answerContainer = answerContainers[questionNumber];
-      const selector = `input[name=question${questionNumber}]:checked`;
-      const userAnswer = (answerContainer.querySelector(selector) || {}).value;
-
-      // if answer is correct
-      if(userAnswer === currentQuestion.correctAnswer){
-        // add to the number of correct answers
-        numCorrect++;
-
-        // color the answers green
-        answerContainers[questionNumber].style.color = 'lightgreen';
-      }
-      // if answer is wrong or blank
-      else{
-        // color the answers red
-        answerContainers[questionNumber].style.color = 'red';
-      }
-    });
-
-    // show number of correct answers out of total
-    resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
-  }
-
-  function showSlide(n) {
-    slides[currentSlide].classList.remove('active-slide');
-    slides[n].classList.add('active-slide');
-    currentSlide = n;
-    if(currentSlide === 0){
-      previousButton.style.display = 'none';
-    }
-    else{
-      previousButton.style.display = 'inline-block';
-    }
-    if(currentSlide === slides.length-1){
-      nextButton.style.display = 'none';
-      submitButton.style.display = 'inline-block';
-    }
-    else{
-      nextButton.style.display = 'inline-block';
-      submitButton.style.display = 'none';
-    }
-  }
-
-  function showNextSlide() {
-    showSlide(currentSlide + 1);
-  }
-
-  function showPreviousSlide() {
-    showSlide(currentSlide - 1);
-  }
-
-  // Variables
-  const quizContainer = document.getElementById('quiz');
-  const resultsContainer = document.getElementById('results');
-  const submitButton = document.getElementById('submit');
-  const myQuestions = [
-    {
-      question: "Who invented JavaScript?",
-      answers: {
-        a: "Douglas Crockford",
-        b: "Sheryl Sandberg",
-        c: "Brendan Eich"
-      },
-      correctAnswer: "c"
-    },
-    {
-      question: "Which one of these is a JavaScript package manager?",
-      answers: {
-        a: "Node.js",
-        b: "TypeScript",
-        c: "npm"
-      },
-      correctAnswer: "c"
-    },
-    {
-      question: "Which tool can you use to ensure code quality?",
-      answers: {
-        a: "Angular",
-        b: "jQuery",
-        c: "RequireJS",
-        d: "ESLint"
-      },
-      correctAnswer: "d"
-    }
-  ];
-
-  // Kick things off
-  buildQuiz();
-
-  // Pagination
-  const previousButton = document.getElementById("previous");
-  const nextButton = document.getElementById("next");
-  const slides = document.querySelectorAll(".slide");
-  let currentSlide = 0;
-
-  // Show the first slide
-  showSlide(currentSlide);
-
-  // Event listeners
-  submitButton.addEventListener('click', showResults);
-  previousButton.addEventListener("click", showPreviousSlide);
-  nextButton.addEventListener("click", showNextSlide);
-})();
-
-		
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-	</script></html>
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
+<center><h1>Quiz Questions</h1></center>
+<p>
+<form name="quiz">
+<p>
+<b>Question 1.
+<br>Which of the following is also known as wood alcohol?<br></b>
+<blockquote>
+<input type="radio" name="q1" value="Methanol">Methanol<br>
+<input type="radio" name="q1" value="Ethanol">Ethanol<br>
+<input type="radio" name="q1" value="Propanol">Propanol<br>
+<input type="radio" name="q2" value="Butanol">Butanol<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 2.
+<br>At which of the following places, printing press of Reserve Bank of India is not present?<br></b>
+<blockquote>
+<input type="radio" name="q2" value="Nashik">Nashik<br>
+<input type="radio" name="q2" value="Dewas">Dewas<br>
+<input type="radio" name="q2" value="Mumbai">Mumbai<br>
+<input type="radio" name="q2" value="Salboni">Salboni<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 3.
+<br>Which among the following is the most primitive life form?<br></b>
+<blockquote>
+<input type="radio" name="q3" value="Bacteria">Bacteria<br>
+<input type="radio" name="q3" value="Protozoa">Protozoa<br>
+<input type="radio" name="q3" value="Blue-Green Algae">Blue-Green Algae<br>
+<input type="radio" name="q3" value="Virus">Virus<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 4.
+<br>While passing over an obstacle a light ray slightly bends round the corner. The phenomenon is known as__:<br></b>
+<blockquote>
+<input type="radio" name="q4" value="Reflection">Reflection<br>
+<input type="radio" name="q4" value="Polarisation">Polarisation<br>
+<input type="radio" name="q4" value="Diffraction">Diffraction<br>
+<input type="radio" name="q4" value="Refraction">Refraction<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 5.
+<br>Which is the deepest river in the world?<br></b>
+<blockquote>
+<input type="radio" name="q5" value="Loire">Loire River<br>
+<input type="radio" name="q5" value="Nile">Nile River<br>
+<input type="radio" name="q5" value="Rhine">Rhine River<br>
+<input type="radio" name="q5" value="Congo">Congo River<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 6.
+<br>Which among the following Galaxy is also known as Messier 31?<br></b>
+<blockquote>
+<input type="radio" name="q6" value="Milky Way">The Milky Way Galaxy<br>
+<input type="radio" name="q6" value="Andromeda">The Andromeda Galaxy<br>
+<input type="radio" name="q6" value="Whirlpool">The Whirlpool Galaxy<br>
+<input type="radio" name="q6" value="Pinwheel">The Pinwheel Galaxy<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 7.
+<br>The term "planetoids" is used for __?<br></b>
+<blockquote>
+<input type="radio" name="q7" value="Dwarf">Dwarf Planets<br>
+<input type="radio" name="q7" value="Satellites">Natural Satellites<br>
+<input type="radio" name="q7" value="Comets">Comets<br>
+<input type="radio" name="q7" value="Asteroids">Asteroids<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 8.
+<br>What is the average thickness of the oceanic crust?<br></b>
+<blockquote>
+<input type="radio" name="q8" value="A">30-35 km<br>
+<input type="radio" name="q8" value="B">50-70 km<br>
+<input type="radio" name="q8" value="C">5-10 km<br>
+<input type="radio" name="q8" value="D">100-150 km<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 9.
+<br>The Government of India (GoI) has signed a MoU with which IIT to set up a Centre of Excellence for Waste to Wealth Technologies?<br></b>
+<blockquote>
+<input type="radio" name="q9" value="INDORE">IIT INDORE<br>
+<input type="radio" name="q9" value="BOMBAY">IIT BOMBAY<br>
+<input type="radio" name="q9" value="MADRAS">IIT MADRAS<br>
+<input type="radio" name="q9" value="DELHI">IIT DELHI<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 10.
+<br>Jim Corbett National Park, Uttarakhand, was established in the year<br></b>
+<blockquote>
+<input type="radio" name="q10" value="1936">1936<br>
+<input type="radio" name="q10" value="1935">1935<br>
+<input type="radio" name="q10" value="1937">1937<br>
+<input type="radio" name="q10" value="1837">1837<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 11.
+<br>Which of the following is not a Greenhouse gas?<br></b>
+<blockquote>
+<input type="radio" name="q11" value="CO">Carbon Mono-Oxide<br>
+<input type="radio" name="q11" value="N20">Nitrous Oxide<br>
+<input type="radio" name="q11" value="CO2">Carbon Di-Oxide<br>
+<input type="radio" name="q11" value="H20">Water Vapour<br>
+</blockquote>
+<p><b>
+<hr>
+
+Question 12.
+<br>Which of the following is known as mango shower?<br></b>
+<blockquote>
+<input type="radio" name="q12" value="winter">Rainfall in winter days<br>
+<input type="radio" name="q12" value="disturbances"> Rainfall caused by western disturbances<br>
+<input type="radio" name="q12" value="Pre-monsoon">Pre monsoon rainfall in Karnataka and Kerala<br>
+<input type="radio" name="q12" value="June-Sept">Rainfall from June to September<br>  
+</blockquote>
+<p><b>
+<hr>
+
+Question 13.
+<br>Which of the following is an inland port of India?<br></b>
+<blockquote>
+<input type="radio" name="q13" value="Varanasi">Varanasi<br>
+<input type="radio" name="q13" value="Meerut">Meerut<br>
+<input type="radio" name="q13" value="Dispur">Dispur<br>
+<input type="radio" name="q13" value="Cuttack">Cuttack<br>  
+</blockquote>
+<p><b>
+<hr>
+
+Question 14.
+<br>At which among the following places, National Flag was hoisted for the First time in India.?<br></b>
+<blockquote>
+<input type="radio" name="q14" value="Lucknow">Lucknow<br>
+<input type="radio" name="q14" value="Nagpur">Nagpur<br>
+<input type="radio" name="q14" value="Kolkata">Kolkata<br>
+<input type="radio" name="q14" value="Delhi">Delhi<br>  
+</blockquote>
+<p><b>
+<hr>
+
+Question 15.
+<br>Which Regiment is the Horse-Mounted Unit of the Indian Army?<br></b>
+<blockquote>
+<input type="radio" name="q15" value="57th">57th Cavalry<br>
+<input type="radio" name="q15" value="61st">61st Cavalry<br>
+<input type="radio" name="q15" value="51st">51st Cavalry<br>
+<input type="radio" name="q15" value="67th">67th Cavalry<br>  
+</blockquote>
+<p><b>
+
+<input type="button"value="Grade Me"onClick="getScore(this.form);">
+<input type="reset" value="Clear"><p>
+Number of score out of 15 = <input type= text size 15 name= "mark">
+Score in percentage = <input type=text size=15 name="percentage"><br>
+</form>
+
+<p>
+<form method="post" name="Form" onsubmit="" action="">
+</form>
+</body>
+
+<script>
+var numQues = 15;
+var numChoi = 4;
+var answers = new Array(15);
+answers[0] = "Methanol";
+answers[1] = "Mumbai";
+answers[2] = "Bacteria";
+answers[3] = "Diffraction";
+answers[4] = "Congo";
+answers[5] = "Andromeda";
+answers[6] = "Asteroids";
+answers[7] = "C";
+answers[8] = "DELHI";
+answers[9] = "1936";
+answers[10] = "CO";
+answers[11] = "Pre-monsoon";
+answers[12] = "Varanasi";
+answers[13] = "Kolkata";
+answers[14] = "61st";
+
+function getScore(form) {
+var score = 0;
+var currElt;
+var currSelection;
+for (i=0; i<numQues; i++) {
+currElt = i*numChoi;
+answered=false;
+for (j=0; j<numChoi; j++) {
+currSelection = form.elements[currElt + j];
+if (currSelection.checked) {
+answered=true;
+if (currSelection.value == answers[i]) {
+score++;
+break;
+}
+}
+}
+
+if (answered ===false){alert("Do answer all the questions, Please") ;return false;}
+}
+
+var scoreper = Math.round(score/numQues*100);
+form.percentage.value = scoreper + "%";
+form.mark.value=score;
+}
+</script>
+</html>
